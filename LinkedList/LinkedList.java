@@ -174,13 +174,107 @@ public class LinkedList {
         return true;
     }
 
+    public boolean isCycle() {
+        Node slow = head;
+        Node fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void removeCycle() {
+        // check if cycle exist or not
+        Node slow = head;
+        Node fast = head;
+        boolean exists = false;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (fast == slow) {
+                exists = true;
+                break; // found meetind point
+            }
+        }
+        if (exists) {
+            slow = head;
+            Node prev = null;
+            while (slow != fast) {
+                slow = slow.next;
+                prev = fast;
+                fast = fast.next;
+            }
+            prev.next = null;
+
+        }
+
+    }
+
+    public Node mergSort(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        Node mid = getMid(head);
+        Node rightHead = mid.next;
+        mid.next = null;
+        Node leftNew = mergSort(head);
+        Node rightNew = mergSort(rightHead);
+        return merge(leftNew, rightNew);
+    }
+
+    private Node getMid(Node head) {
+        Node slow = head;
+        Node fast = head.next;
+        while (fast == null && fast.next == null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    private Node merge(Node head1, Node head2) {
+        Node mergedLl = new Node(-1);
+        Node temp = mergedLl;
+        while (head1 != null && head2 != null) {
+            if (head1.data < head2.data) {
+                temp.next = head1;
+                head1 = head1.next;
+            } else {
+                temp.next = head2;
+                head2 = head2.next;
+            }
+            temp = temp.next;
+        }
+        while (head1 != null) {
+            temp.next = head1;
+            head1 = head1.next;
+            temp = temp.next;
+        }
+        while (head2 != null) {
+            temp.next = head2;
+            head1 = head2.next;
+            temp = temp.next;
+        }
+
+        return mergedLl.next;
+
+    }
+
     public static void main(String[] args) {
         LinkedList ll = new LinkedList();
         ll.addFirst(1);
-        ll.addLast(2);
-        ll.addLast(1);
+        ll.addFirst(2);
+        ll.addFirst(3);
+        ll.addFirst(4);
+        ll.addFirst(5);
         ll.printList();
-        System.out.println(ll.checkPalindrome());
+        ll.head = ll.mergSort(ll.head);
+        ll.printList();
+
     }
 
 }
